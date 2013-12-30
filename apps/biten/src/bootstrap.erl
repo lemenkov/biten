@@ -65,14 +65,9 @@ get_addrs_ipv4_dns() ->
     lists:flatten([nslookup_ipv4(A) || A <- L]).
 
 nslookup_ipv4(Addr) ->
-    Type = a,
-    Class = in,
-    case inet_res:resolve(Addr, Class, Type) of
-        {ok,Msg} ->
-            [inet_dns:rr(RR, data) ||
-                RR <- inet_dns:msg(Msg, anlist),
-                inet_dns:rr(RR, type) =:= Type,
-                inet_dns:rr(RR, class) =:= Class];
-        {error,_} ->
-            []
-    end.
+	case inet:getaddrs(Addr,inet) of
+		{ok,IpList} ->
+			IpList;
+		{error,_} ->
+			[]
+	end.
