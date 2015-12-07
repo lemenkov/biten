@@ -9,7 +9,7 @@
 -behaviour(gen_server).
 
 %% API
--export([start_link/0, stop/0]).
+-export([start_link/0]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2, terminate/2, code_change/3]).
@@ -25,10 +25,6 @@
 -spec start_link() -> pid().
 start_link() ->
     gen_server:start_link({local, ?SERVER}, ?MODULE, [], []).
-
-%% @doc Stop statistics process
-stop() ->
-    gen_server:cast(?SERVER, stop).
 
 %%% ==========================================================================
 %%% gen_server callbacks.
@@ -47,10 +43,7 @@ handle_call(_Request, _From, S) ->
 handle_cast(go, S) ->
     IPs = get_addrs_ipv4_dns(),
     peerdiscovery:add([{IP, 8333} || IP <- IPs]),
-    {stop, normal, S};
-
-handle_cast(stop, State) ->
-    {stop, normal, State}.
+    {stop, normal, S}.
 
 handle_info(_Msg, S) ->
     {noreply, S}.
